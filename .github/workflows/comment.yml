@@ -4,15 +4,23 @@ on:
     types: [created, edited]
 jobs:
   publish:
+    runs-on: ubuntu-latest
     # Only trigger from comments on pulls
     if: ${{ github.event.issue.pull_request }}
-    runs-on: ubuntu-latest
+    # Allow the bot to comment on pulls
+    permissions:
+      issues: write
     steps:
+      - name: SOME STUFF
+        uses: actions/github-script@v6
+        with:
+          script:
+            console.log(`${{ toJSON(github.event) }}`)
       - name: 🏗 Setup repo
         uses: actions/checkout@v2
         with:
           # Checkout the repo on the pull
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: refs/pull/${{ github.event.issue.number }}/merge
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
         with:
@@ -28,5 +36,3 @@ jobs:
         run: yarn install
       - name: Run command
         uses: expo/expo-github-action/command@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
