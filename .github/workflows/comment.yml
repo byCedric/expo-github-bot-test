@@ -1,13 +1,18 @@
 name: Expo Comment Bot
 on:
   issue_comment:
-    types: [created]
+    types: [created, edited]
 jobs:
   publish:
+    # Only trigger from comments on pulls
+    if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v2
+        with:
+          # Checkout the repo on the pull
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
         with:
